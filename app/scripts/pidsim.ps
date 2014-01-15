@@ -1,0 +1,66 @@
+var MARGIN;
+var centerY;
+
+function drawChart() {
+	var axis = new Path();
+
+	axis.strokeColor = 'black';
+	axis.strokeWidth = '1';
+
+	axis.add(new Point(MARGIN, MARGIN));
+	axis.add(new Point(MARGIN, MARGIN + view.size.height - (MARGIN << 1)));
+	axis.add(new Point(MARGIN + view.size.width - (MARGIN << 1), MARGIN + view.size.height - (MARGIN << 1)));
+
+	var dot = new Path.Circle(new Point(MARGIN, MARGIN), 4);
+	dot.fillColor = 'black';
+	dotSymbol = new Symbol(dot);
+	dot.remove();
+
+	var MAX = 100;
+	var STEP = 25;
+
+	for(var i = 0; i < MAX; i++) {
+		if(i % STEP == 0) {
+			var instance = dotSymbol.place();
+			var x = MARGIN;
+			var y = MARGIN + i/MAX * (view.size.height - (MARGIN << 1));
+			instance.position = new Point(x, y);
+
+			var instance = dotSymbol.place();
+			var x = MARGIN + STEP/MAX * (view.size.width - (MARGIN << 1)) + i/MAX * (view.size.width - (MARGIN << 1));
+			var y = MARGIN + view.size.height - (MARGIN << 1);
+			instance.position = new Point(x, y);
+		}
+	}
+}
+
+
+var wave;
+var waveX;
+function initWave() {
+	waveX = MARGIN;
+	wave = new Path();
+	wave.strokeColor = 'red';
+	wave.strokeWidth = '1';
+	wave.add(new Point(waveX, centerY));
+}
+
+
+function onFrame(event) {
+	waveX += 24;
+	var y = Math.sin(waveX) * 100;
+	wave.add(new Point(waveX, centerY + y));
+	wave.smooth();
+}
+
+function onResize(event) {
+	console.log('onResize');
+
+	project.activeLayer.removeChildren();
+
+	MARGIN = view.size.width >> 4;
+	centerY = view.size.height >> 1;
+
+	drawChart();
+	initWave();
+}
